@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	   xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+	<!--spring管理hibernate的SessionFactory
+		引入sessionFactory，因为SessionFactory没有setter注入dataSource的方法，
+		所以这个类不符合spring容器的特点，所以spring在此基础上开发了一个新的类，
+		LocalSessionFactoryBean
+	  -->
+	 <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+		<property name="url" value="jdbc:mysql://127.0.0.1:3306/day1119?useUnicode=true&amp;characterEncoding=utf8"></property>
+		<property name="username" value="root"></property>
+		<property name="password" value="root"></property>
+	</bean>
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.current_session_context_class">org.springframework.orm.hibernate4.SpringSessionContext</prop>
+			</props>
+		</property>
+		<property name="mappingLocations" value="classpath:com/zxy/entity/*.hbm.xml"></property>
+	</bean>
+	
+	<!--将Session factory 交给事务管理器transactionManager  管理事务  -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	<!--配置事务的通知///声明式事务  -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<!-- rollback-for属性就是当发生异常后，事务回滚后的操作，默认抛异常
+				timeout：事务的超时时间：默认-1，永远不超时，可以设置，一般情况下，一个事务瞬时就可以执行完成
+				但是不排除，有的很长时间，这样的就长时间占用资源，尤其是数据库资源，事务在开启的时候，有可能锁定数据库中的数据
+				单位是:秒
+			 -->
+			<tx:method name="save*" propagation="REQUIRED"  isolation="DEFAULT" rollback-for="java.lang.Exception"/>
+			<tx:method name="update*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+			<tx:method name="delete*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+			<tx:method name="add*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+			<tx:method name="*" read-only="true"/>
+		</tx:attributes>
+	</tx:advice>
+	<!-- 配置aop切面，管理事务的切入点 -->
+	<aop:config>
+		<aop:advisor advice-ref="txAdvice"  pointcut="execution(* com.zxy.service.*.*(..))"/>
+	</aop:config>
+		
+		
+	<!-- 把hibernate模板注入dao层-->
+	<bean id="userDao" class="com.zxy.dao.UserDao">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory"/>
+		</property>
+	</bean>
+	
+	<!--把dao注入给service -->
+	<bean id="userService" class="com.zxy.service.impl.UserServiceImpl">
+		<property name="userDao">
+			<ref bean="userDao"/>
+		</property>
+	</bean>
+	
+	<bean id="userAction" class="com.zxy.action.UserAction" scope="prototype">
+		<property name="userService">
+			<ref bean="userService"/>
+		</property>
+	</bean>
+	
+	<!-- 声明式事务的第一个方面是传播行为。传播行为定义关于客户端和被调用方法的事务边界。
+		Spring中七种Propagation类的事务传播属性详解： 
+ 			REQUIRED：支持当前事务，如果当前没有事务，就新建一个事务。这是最常见的选择。 
+ 			SUPPORTS：支持当前事务，如果当前没有事务，就以非事务方式执行。
+ 			MANDATORY：支持当前事务，如果当前没有事务，就抛出异常。
+ 			REQUIRES_NEW：新建事务，如果当前存在事务，把当前事务挂起。 
+ 			NOT_SUPPORTED：以非事务方式执行操作，如果当前存在事务，就把当前事务挂起。
+ 			NEVER：以非事务方式执行，如果当前存在事务，则抛出异常。
+ 			NESTED：支持当前事务，如果当前事务存在，则执行一个嵌套事务，如果当前没有事务，就新建一个事务。
+	 -->
+	 <!-- 声明式事务的第二个方面是隔离级别。
+	 		隔离级别定义一个事务可能受其他并发事务活动活动影响的程度。另一种考虑一个事务的隔离级别的方式，
+	 			是把它想象为那个事务对于事物处理数据的自私程度。
+	 		在一个典型的应用程序中，多个事务同时运行，经常会为了完成他们的工作而操作同一个数据。并发虽然是必需的，但是会导致一下问题：
+			•脏读（Dirty read）：脏读发生在一个事务读取了被另一个事务改写但尚未提交的数据时。如果这些改变在稍后被回滚了，
+				那么第一个事务读取的数据就会是无效的。
+			•不可重复读（Nonrepeatable read）：不可重复读发生在一个事务执行相同的查询两次或两次以上，但每次查询结果都不相同时。
+				这通常是由于另一个并发事务在两次查询之间更新了数据。
+			•幻影读（Phantom reads）：幻影读和不可重复读相似。当一个事务（T1）读取几行记录后，另一个并发事务（T2）插入了一些记录时，
+				幻影读就发生了。在后来的查询中，第一个事务（T1）就会发现一些原来没有的额外记录。
+			在理想状态下，事务之间将完全隔离，从而可以防止这些问题发生。然而，完全隔离会影响性能，因为隔离经常牵扯到锁定在数据库中的记录
+				（而且有时是锁定完整的数据表）。侵占性的锁定会阻碍并发，要求事务相互等待来完成工作。
+	  -->
+	 <!-- Spring的事务的隔离级别isolation
+	 		ISOLATION_DEFAULT：使用后端数据库默认的隔离级别。
+	 		ISOLATION_READ_UNCOMMITTED：允许读取尚未提交的更改。可能导致脏读、幻影读或不可重复读。
+	 		ISOLATION_READ_COMMITTED：允许从已经提交的并发事务读取。可防止脏读，但幻影读和不可重复读仍可能会发生。
+	 		ISOLATION_REPEATABLE_READ：对相同字段的多次读取的结果是一致的，除非数据被当前事务本身改变。可防止脏读和不可重复读，但幻影读仍可能发生。
+	 		ISOLATION_SERIALIZABLE：完全服从ACID的隔离级别，确保不发生脏读、不可重复读和幻影读。这在所有隔离级别中也是最慢的，因为它通常是通过完全锁定当前事务所涉及的数据表来完成的。
+	  -->
+</beans>
