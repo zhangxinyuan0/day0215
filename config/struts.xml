@@ -12,7 +12,13 @@
 		<package name="user"  extends="struts-default">
 			<action name="user_*" class="userAction" method="{1}">
             	<result name="user_info">/index.jsp</result>
-            	<result name="user_list">/index.jsp</result>
+            	<result name="user_list">/WEB-INF/view/user_list.jsp</result>
+            	<result name="left">/WEB-INF/view/left.jsp</result>
+            	<result name="login_ok">/WEB-INF/view/main.jsp</result>
+				<result name="delete" type="redirect">user_findPage.action</result>
+				<result name="update">/WEB-INF/view/update.jsp</result>
+				<result name="user_grade">/WEB-INF/view/user_grade.jsp</result>
+				<result name="user_course">/WEB-INF/view/user_course.jsp</result>
 			</action>
 		</package>
 	</struts>

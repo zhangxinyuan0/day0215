@@ -1,6 +1,8 @@
 package com.zxy.entity;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @Author 张新远
@@ -8,17 +10,35 @@ import java.util.Date;
  * @Version 1.0
  */
 public class UserBean {
-    private int id;
+    private Integer id;
     private String uname;
     private String pwd;
     private String age;
     private Date birthday;
+    private GradeBean gb;
+    private Set<CourseBean> courses = new HashSet<>();
 
-    public int getId() {
+    public GradeBean getGb() {
+        return gb;
+    }
+
+    public void setGb(GradeBean gb) {
+        this.gb = gb;
+    }
+
+    public Set<CourseBean> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(Set<CourseBean> courses) {
+        this.courses = courses;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

@@ -5,6 +5,8 @@
     <title></title>
   </head>
   <body>
-
+  <form action="user_getLogin.action" method="post">
+    <input type="submit" name="登录">
+  </form>
   </body>
 </html>

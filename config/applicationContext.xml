@@ -66,11 +66,34 @@
 			<ref bean="sessionFactory"/>
 		</property>
 	</bean>
-	
+	<bean id="powerDao" class="com.zxy.dao.PowerDao">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory"/>
+		</property>
+	</bean>
+	<bean id="courseDao" class="com.zxy.dao.CourseDao">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory"/>
+		</property>
+	</bean>
+	<bean id="gradeDao" class="com.zxy.dao.GradeDao">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory"/>
+		</property>
+	</bean>
 	<!--把dao注入给service -->
 	<bean id="userService" class="com.zxy.service.impl.UserServiceImpl">
 		<property name="userDao">
 			<ref bean="userDao"/>
+		</property>
+		<property name="courseDao">
+			<ref bean="courseDao"/>
+		</property>
+		<property name="powerDao">
+			<ref bean="powerDao"/>
+		</property>
+		<property name="gradeDao">
+			<ref bean="gradeDao"/>
 		</property>
 	</bean>
 	

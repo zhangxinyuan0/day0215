@@ -13,6 +13,9 @@ public class GradeBean {
     private int gid;
     private String gname;
     private String gdesc;
+    /**
+     * 一对多的配置
+     */
     private Set<UserBean> users = new HashSet<>();
 
     public Set<UserBean> getUsers() {
