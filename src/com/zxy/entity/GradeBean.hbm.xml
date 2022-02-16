@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="com.zxy.entity.GradeBean" table="tb_grade">
+        <id name="gid" type="int">
+            <column name="gid"/>
+            <generator class="increment"/>
+        </id>
+        <property name="gname"/>
+		<property name="gdesc"/>
+        <set name="users">
+            <key column="gid"/>
+            <one-to-many class="com.zxy.entity.UserBean"/>
+        </set>
+    </class>
+</hibernate-mapping>
