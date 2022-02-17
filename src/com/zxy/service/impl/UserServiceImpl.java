@@ -83,6 +83,7 @@ public class UserServiceImpl implements UserService {
     public UserBean findOneUser(String id) {
         int ids = Integer.parseInt(id);
         UserBean oneUser = userDao.findOneUser(ids);
+        System.out.println("sss");
         return oneUser;
     }
 
