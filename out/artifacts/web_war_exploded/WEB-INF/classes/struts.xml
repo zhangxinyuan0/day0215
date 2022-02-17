@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+	
+	<struts>
+		<!-- SSH整个后，struts交给spring管理，对于struts文件有两个地方的修改
+			1、加载下面的一句话，就是把struts交给spring管理
+			2、action中的class，以前我们是全路径，现在是spring的id，spring的id对应的class会指到对应的action中
+		 -->
+		<constant name="struts.objectFactory" value="spring"/>
+		<package name="user"  extends="struts-default">
+			<action name="user_*" class="userAction" method="{1}">
+            	<result name="user_info">/index.jsp</result>
+            	<result name="user_list">/WEB-INF/view/user_list.jsp</result>
+            	<result name="left">/WEB-INF/view/left.jsp</result>
+            	<result name="login_ok">/WEB-INF/view/main.jsp</result>
+				<result name="delete" type="redirect">user_findPage.action</result>
+				<result name="update">/WEB-INF/view/update.jsp</result>
+				<result name="user_grade">/WEB-INF/view/user_grade.jsp</result>
+				<result name="user_course">/WEB-INF/view/user_course.jsp</result>
+			</action>
+		</package>
+	</struts>
+
+	
+	
+	
