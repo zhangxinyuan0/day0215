@@ -26,4 +26,6 @@ public interface UserService {
     void updateGrade(Integer id, int gid);
 
     List<CourseBean> findAllCourse();
+
+    void updateCourse(UserBean userBean, int[] courseshu);
 }

@@ -110,5 +110,10 @@ public class UserServiceImpl implements UserService {
 
         return courseDao.findAllCourse();
     }
+
+    @Override
+    public void updateCourse(UserBean userBean, int[] courseshu) {
+        userDao.updateCourse(userBean,courseshu);
+    }
 }
 

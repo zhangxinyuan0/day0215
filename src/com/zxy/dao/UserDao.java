@@ -79,5 +79,14 @@ public class UserDao {
         userBean.setCourses(o.getCourses());
         this.getSession().merge(userBean);
     }
+
+    public void updateCourse(UserBean userBean, int[] courseshu) {
+        if (userBean!=null){
+            this.getSession().createSQLQuery("delete from tb_user_course where id = "+userBean.getId()).executeUpdate();
+        }
+        for (int i = 0; i < courseshu.length; i++) {
+            this.getSession().createSQLQuery("insert into tb_user_course value("+userBean.getId()+","+courseshu[i]+")").executeUpdate();
+        }
+    }
 }
 

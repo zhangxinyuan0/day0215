@@ -27,6 +27,15 @@ public class UserAction {
     private List<GradeBean> gradeBeanList;
     private GradeBean gradeBean;
     private List<CourseBean> courseBeanList;
+    private int[] courseshu;
+
+    public int[] getCourseshu() {
+        return courseshu;
+    }
+
+    public void setCourseshu(int[] courseshu) {
+        this.courseshu = courseshu;
+    }
 
     public List<CourseBean> getCourseBeanList() {
         return courseBeanList;
@@ -164,7 +173,21 @@ public class UserAction {
     public String findAllCourse(){
         userBean = userService.findOneUser(id);
         courseBeanList = userService.findAllCourse();
+        for (CourseBean c: courseBeanList
+             ) {
+            for (CourseBean u: userBean.getCourses()
+                 ) {
+                if (c.getCid()==u.getCid()){
+                    c.setShu(1);
+                }
+            }
+        }
         return "user_course";
+    }
+
+    public String updateCourse(){
+        userService.updateCourse(userBean,courseshu);
+        return "delete";
     }
 }
 

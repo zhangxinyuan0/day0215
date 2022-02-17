@@ -5,6 +5,15 @@ public class CourseBean {
     private Integer cid;
     private String cname;
     private String cdesc;
+    private int shu;
+
+    public int getShu() {
+        return shu;
+    }
+
+    public void setShu(int shu) {
+        this.shu = shu;
+    }
 
     public Integer getCid() {
         return cid;

@@ -15,8 +15,15 @@
     <center>
         <form action="user_updateCourse.action" method="post">
             <c:forEach items="${courseBeanList}" var="c">
-                <input name="c.cid" value="c.cid" type="checkbox">${c.cname}
+                    <c:if test="${c.shu==1}">
+                        <input name="courseshu" value="${c.cid}" type="checkbox" checked>${c.cname}
+                    </c:if>
+                    <c:if test="${c.shu!=1}">
+                        <input name="courseshu" value="${c.cid}" type="checkbox" >${c.cname}
+                    </c:if>
             </c:forEach>
+            <input name="userBean.id" value="${userBean.id}" style="display: none"/>
+            <input type="submit" value="提交">
         </form>
     </center>
 </body>
